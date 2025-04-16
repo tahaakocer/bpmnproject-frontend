@@ -11,6 +11,18 @@ export const getAllProductCatalog = async () => {
   }
 };
 
+// BBK ile ürünleri getir - Yeni eklenen fonksiyon
+export const getProductsByBbk = async (bbk) => {
+  try {
+    const response = await api.get(`/api/product-catalog/get-by-bbk?bbk=${bbk}`);
+    console.log('BBK ile ürünler başarıyla getirildi:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('BBK ile ürün getirme hatası:', error);
+    throw error;
+  }
+};
+
 export const updateOrderProducts = async (orderRequestId, productCatalogCode) => {
   try {
     const response = await api.put(

@@ -1,0 +1,63 @@
+.address-form-container {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .dropdown-select {
+    position: relative;
+    width: 100%;
+  }
+  
+  .dropdown-selected {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .dropdown-arrow {
+    font-size: 10px;
+  }
+  
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dropdown-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .dropdown-option:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .dropdown-option.disabled {
+    color: #999;
+    cursor: not-allowed;
+    background-color: #f8f8f8;
+  }
+  
+  /* Responsive tasarım */
+  @media (max-width: 768px) {
+    .dropdown-options {
+      max-height: 150px;
+    }
+  }

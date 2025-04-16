@@ -24,7 +24,7 @@ export const initializeOrder = async () => {
 export const updateOrderRequest = async (processInstanceId, requestBody) => {
   try {
     // API yolu doğru şekilde tanımlanmış
-    const response = await api.patch(
+    const response = await api.post(
       `/api/initialize/${processInstanceId}/update-order-request`, 
       requestBody
     );
@@ -33,6 +33,16 @@ export const updateOrderRequest = async (processInstanceId, requestBody) => {
     return response.data;
   } catch (error) {
     console.error('Sipariş güncelleme hatası:', error);
+    throw error;
+  }
+};
+export const getOrderRequest = async (orderRequestId) => {
+  try {
+    const response = await api.get(`/api/initialize/${orderRequestId}/get-order-request`);
+    console.log('Sipariş isteği başarıyla getirildi:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Sipariş isteği getirme hatası:', error);
     throw error;
   }
 };

@@ -4,11 +4,13 @@ import {
   updateOrderProducts,
   deleteOrderProducts,
   getOrderRequest,
-  getProductByCode
+  getProductByCode,
+  getProductsByBbk  // Yeni BBK ile ürün getirme fonksiyonu
 } from '../../services/productService';
 import '../../styles/FormStyles.css';
 import { sendMessage } from '../../services/taskService';
-import { ChevronDown, ChevronUp, Trash2, ShoppingCart, X, AlertCircle, Info, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, ShoppingCart, X, AlertCircle, Info, Plus, Wifi } from 'lucide-react';
+import { getMaxSpeedInfo } from '../../services/infrastructureService'; // Yeni eklenecek servis
 
 // Ürün Detayları Popup Bileşeni
 const ProductDetailModal = ({ product, onClose }) => {
@@ -107,6 +109,34 @@ const ProductDetailModal = ({ product, onClose }) => {
   );
 };
 
+// Maksimum Hız Bilgisi Bileşeni
+const MaxSpeedInfo = ({ speedInfo }) => {
+  if (!speedInfo) return null;
+
+  const hasVdsl = speedInfo.vdsl !== undefined;
+  const hasAdsl = speedInfo.adsl !== undefined;
+  const speedValue = hasVdsl ? speedInfo.vdsl : (hasAdsl ? speedInfo.adsl : null);
+  const speedType = hasVdsl ? 'VDSL' : (hasAdsl ? 'ADSL' : '');
+
+  if (speedValue === null) return null;
+
+  return (
+    <div className="max-speed-info">
+      <div className="max-speed-header">
+        <Wifi size={18} />
+        <h3>Adresinizde Mevcut İnternet Altyapısı</h3>
+      </div>
+      <div className="max-speed-content">
+        <div className="speed-type">{speedType}</div>
+        <div className="speed-value">{speedValue} Mbps</div>
+        <div className="speed-description">
+          Bu lokasyonda alabileceğiniz maksimum internet hızı
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProductCard = ({ product, onAddToCart, onViewDetails }) => {
   return (
     <div className="product-card">
@@ -162,6 +192,9 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [bbk, setBbk] = useState(null);
+  const [maxSpeedInfo, setMaxSpeedInfo] = useState(null);
+  const [usingBbkProducts, setUsingBbkProducts] = useState(false);
 
   // Sipariş detaylarını getiren ve güncelleyen fonksiyon
   const fetchOrderDetails = useCallback(async () => {
@@ -170,20 +203,73 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         const orderRequest = await getOrderRequest(orderData.data.orderRequestId);
         console.log('Order Request Details:', orderRequest.data);
         setOrderDetails(orderRequest.data.baseOrder);
+        
+        // BBK bilgisini al
+        if (orderRequest.data?.baseOrder?.engagedParty?.address?.bbk) {
+          const bbkValue = orderRequest.data.baseOrder.engagedParty.address.bbk;
+          setBbk(bbkValue);
+          
+          // BBK ile ürünleri getir
+          await fetchProductsByBbk(bbkValue);
+          
+          // BBK ile maksimum hız bilgisini getir
+          await fetchMaxSpeedInfo(bbkValue);
+        }
       }
     } catch (err) {
       setError('Sipariş detayları yüklenirken bir hata oluştu: ' + err.message);
     }
   }, [orderData]);
 
+  // BBK ile ürünleri getir
+  const fetchProductsByBbk = async (bbkValue) => {
+    try {
+      setLocalLoading(true);
+      const response = await getProductsByBbk(bbkValue);
+      if (response.data && response.data.length > 0) {
+        setProducts(response.data);
+        setUsingBbkProducts(true);
+      } else {
+        // BBK'ya göre ürün bulunamazsa tüm ürünleri getir
+        const allProducts = await getAllProductCatalog();
+        setProducts(allProducts.data || []);
+        setUsingBbkProducts(false);
+      }
+    } catch (err) {
+      console.error('BBK ile ürün getirme hatası:', err);
+      // Hata durumunda tüm ürünleri getir
+      const allProducts = await getAllProductCatalog();
+      setProducts(allProducts.data || []);
+      setUsingBbkProducts(false);
+    } finally {
+      setLocalLoading(false);
+    }
+  };
+
+  // BBK ile maksimum hız bilgisini getir
+  const fetchMaxSpeedInfo = async (bbkValue) => {
+    try {
+      const speedInfo = await getMaxSpeedInfo(bbkValue);
+      if (speedInfo && speedInfo.data) {
+        setMaxSpeedInfo(speedInfo.data);
+      }
+    } catch (err) {
+      console.error('Maksimum hız bilgisi getirme hatası:', err);
+    }
+  };
+
   // İlk yükleme ve ürün ekleme/silme sonrası çalışacak
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLocalLoading(true);
-        const productCatalog = await getAllProductCatalog();
-        setProducts(productCatalog.data || []);
         await fetchOrderDetails();
+        
+        // BBK yoksa veya BBK ürünleri getirilemezse tüm ürünleri getir
+        if (!usingBbkProducts && products.length === 0) {
+          const productCatalog = await getAllProductCatalog();
+          setProducts(productCatalog.data || []);
+        }
       } catch (err) {
         setError('Ürünler yüklenirken bir hata oluştu: ' + err.message);
       } finally {
@@ -192,7 +278,7 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
     };
 
     fetchData();
-  }, [fetchOrderDetails]);
+  }, [fetchOrderDetails, usingBbkProducts, products.length]);
 
   // Ürün ekleme
   const handleProductAdd = async (product) => {
@@ -276,9 +362,17 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         </div>
       )}
       
+      {/* Maksimum hız bilgisi */}
+      {maxSpeedInfo && <MaxSpeedInfo speedInfo={maxSpeedInfo} />}
+      
       <div className="product-selection-grid">
         <div className="product-catalog">
-          <h2>Ürün Kataloğu</h2>
+          <h2>
+            Ürün Kataloğu
+            {usingBbkProducts && bbk && (
+              <span className="bbk-products-note"> (BBK: {bbk})</span>
+            )}
+          </h2>
           {error && (
             <div className="error-banner">
               <AlertCircle size={16} /> {error}

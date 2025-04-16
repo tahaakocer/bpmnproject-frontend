@@ -63,6 +63,7 @@ export const getTasksByProcessInstanceId = async (processInstanceId) => {
       throw error;
     }
   };
+  
   function bekle(milisaniye) {
     return new Promise(resolve => setTimeout(resolve, milisaniye));
   }
