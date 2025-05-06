@@ -7,7 +7,9 @@ const ProgressBar = ({ step, totalSteps }) => {
     { number: 2, label: "İletişim Bilgileri" },
     { number: 3, label: "Adres Bilgileri" },
     { number: 4, label: "Kimlik Bilgileri İnceleme" },
-    { number: 5, label: "Ürün Seçimi" }
+    { number: 5, label: "Ürün Seçimi" },
+    { number: 6, label: "Sipariş Özeti" },
+    { number: 7, label: "Tamamlandı" }
   ];
 
   return (

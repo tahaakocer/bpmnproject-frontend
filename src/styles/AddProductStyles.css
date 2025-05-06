@@ -1,176 +1,160 @@
+/* AddProductStyles.css */
+
 .add-product-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.add-product-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.add-product-left,
+.add-product-right {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  padding: 20px;
+}
+
+.add-product-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1.2rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.add-product-container input,
+.add-product-container select,
+.add-product-container textarea {
+  background-color: #ececec;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+/* Spec Search Section */
+.spec-search-container {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.spec-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0 0 4px 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.spec-search-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.spec-search-item:hover {
+  background-color: var(--hover-color);
+}
+
+/* Selected Spec Section */
+.selected-spec {
+  background-color: var(--secondary-color);
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.spec-info {
+  flex-grow: 1;
+}
+
+.spec-info h4 {
+  margin: 0 0 5px 0;
+  color: var(--primary-color);
+}
+
+.remove-spec-button {
+  background-color: var(--error-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Characteristics List */
+.characteristics-list {
+  margin-top: 20px;
+}
+
+.characteristic-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.characteristic-name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.characteristic-value {
+  flex: 1;
+}
+
+.characteristic-value input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #ececec;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.readonly-value {
+  color: #666;
+  font-style: italic;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .add-product-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 20px;
+    grid-template-columns: 1fr;
   }
-  
-  .add-product-left, .add-product-right {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px var(--shadow-color);
-    padding: 20px;
-  }
-  
-  .add-product-section {
-    margin-bottom: 30px;
-  }
-  
-  .section-title {
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 1.2rem;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .add-product-container input,
-  .add-product-container select,
-  .add-product-container textarea {
-    background-color: #ececec;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-  }
-  
-  /* Spec arama bölümü */
-  .spec-search-container {
-    position: relative;
-    margin-bottom: 30px;
-  }
-  
-  .spec-search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 0 0 4px 4px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .spec-search-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  
-  .spec-search-item:hover {
-    background-color: var(--hover-color);
-  }
-  
-  /* Seçilen spec bölümü */
-  .selected-spec {
-    background-color: var(--secondary-color);
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .spec-info {
-    flex-grow: 1;
-  }
-  
-  .spec-info h4 {
-    margin: 0 0 5px 0;
-    color: var(--primary-color);
-  }
-  
-  .remove-spec-button {
-    background-color: var(--error-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  /* Karakteristikler listesi */
-  .characteristics-list {
-    margin-top: 20px;
-  }
-  
-  .characteristic-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color);
-  }
-  
-  .characteristic-name {
-    font-weight: 500;
-    flex: 1;
-  }
-  
-  .characteristic-value {
-    flex: 1;
-  }
-  
-  .characteristic-value input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 4px;
-    background-color: #ececec;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-  }
-  
-  .readonly-value {
-    color: #666;
-    font-style: italic;
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 30px;
-  }
-  
-  /* Uyarı mesajları */
-  .notification {
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .success-notification {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border-left: 4px solid #2e7d32;
-  }
-  
-  .error-notification {
-    background-color: #ffebee;
-    color: var(--error-color);
-    border-left: 4px solid var(--error-color);
-  }
-  
-  /* Responsive düzen */
-  @media (max-width: 768px) {
-    .add-product-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+}

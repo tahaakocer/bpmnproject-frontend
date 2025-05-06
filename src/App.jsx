@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import './styles/App.css';
-import Navbar from './components/Navbar';
+import './styles/MernisFeedbackStyles.css';
+import './styles/OrderSummaryStyles.css';
+import './styles/CharacteristicStyles.css';
+import Navbar from './components/Navbar.jsx';
 import CustomerIdentity from './components/TaskPages/CustomerIdentity';
 import CustomerContact from './components/TaskPages/CustomerContact';
 import CustomerAddress from './components/TaskPages/CustomerAddress';
 import CustomerReview from './components/TaskPages/CustomerReview';
 import CustomerAddProduct from './components/TaskPages/CustomerAddProduct';
-import AddProduct from './components/AddProduct';
+import CustomerMernisFeedback from './components/TaskPages/CustomerMernisFeedback';
+import OrderSummary from './components/TaskPages/OrderSummary';
+import AddProduct from './components/AddProduct.jsx';
 import ProductList from './components/ProductList';
 import { initializeOrder, updateOrderRequest } from './services/orderService';
 import { getTasksByProcessInstanceId, completeTask } from './services/taskService';
-import ProgressBar from './components/ProgressBar';
+import ProgressBar from './components/ProgressBar.jsx';
+import AddonProductPage from './components/AddonProductPage';
+import AddonList from './components/AddonList';
+import CharacteristicList from './components/CharacteristicList';
+import Login from './components/Login.jsx';
+import Register from './components/Register.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+
+// Component to conditionally render Navbar
+const NavbarWrapper = () => {
+  const location = useLocation();
+  const hideNavbar = ['/login', '/register'].includes(location.pathname);
+  return !hideNavbar ? <Navbar /> : null;
+};
 
 function App() {
   const [orderData, setOrderData] = useState(null);
@@ -42,7 +60,7 @@ function App() {
       console.log("processInstanceId:", response?.data?.processInstanceId);
       setOrderData(response);
       setProcessInstanceId(response.data.processInstanceId);
-      
+
       // Task bilgisini getir
       await fetchCurrentTask(response.data.processInstanceId);
       setStep(1);
@@ -58,27 +76,74 @@ function App() {
   const fetchCurrentTask = async (pInstanceId) => {
     try {
       setLoading(true);
+      console.log("fetchCurrentTask çağrılıyor. ProcessInstanceId:", pInstanceId);
+
+      // Error state'ini sıfırla
+      setError(null);
+
       const task = await getTasksByProcessInstanceId(pInstanceId);
+      console.log("getTasksByProcessInstanceId yanıtı:", task);
+
       if (task) {
         setCurrentTask(task);
         setCurrentTaskId(task.id);
-        
+
         // Task tipine göre adımı güncelle
-        if (task.taskDefinitionKey === 'UT_CustomerIdentity') setStep(1);
-        else if (task.taskDefinitionKey === 'UT_CustomerContact') setStep(2);
-        else if (task.taskDefinitionKey === 'UT_CustomerAddress') setStep(3);
-        else if (task.taskDefinitionKey === 'UT_ReviewIdentity') setStep(4);
-        else if (task.taskDefinitionKey === 'UT_AddProduct') setStep(5);
-        
+        switch (task.taskDefinitionKey) {
+          case 'UT_CustomerIdentity':
+            setStep(1);
+            break;
+          case 'UT_MernisFeedback':
+            setStep(1);
+            break;
+          case 'UT_CustomerContact':
+            setStep(2);
+            break;
+          case 'UT_CustomerAddress':
+            setStep(3);
+            break;
+          case 'UT_ReviewIdentity':
+            setStep(4);
+            break;
+          case 'UT_AddProduct':
+            setStep(5);
+            break;
+          case 'UT_OrderSummary':
+            setStep(6);
+            break;
+          default:
+            console.log("Bilinmeyen task tipi:", task.taskDefinitionKey);
+        }
+
+        console.log("Task tipi:", task.taskDefinitionKey, "Yeni adım:", step);
         return task;
       } else {
         // Task yoksa işlem tamamlanmış olabilir
+        console.log("Aktif task bulunamadı, işlem tamamlanmış olabilir");
         setCompleted(true);
+        setStep(7);
         return null;
       }
     } catch (err) {
-      setError('Task bilgisi alınırken bir hata oluştu: ' + err.message);
       console.error('Task bilgisi getirme hatası:', err);
+
+      // Hata kodunu ve mesajını kontrol et
+      const isProcessCompletedError =
+        err.response?.status === 500 ||
+        err.message?.includes('No task found') ||
+        err.message?.includes('ProcessInstanceId not found') ||
+        err.message?.toLowerCase().includes('tamamlandı');
+
+      if (isProcessCompletedError) {
+        console.log('Süreç tamamlanmış, başarı ekranı gösteriliyor');
+        setCompleted(true);
+        setStep(7);
+        setError(null); // Hata mesajını temizle
+        return null;
+      }
+
+      // Diğer hatalar için normal hata işleme
+      setError('Task bilgisi alınırken bir hata oluştu: ' + err.message);
       return null;
     } finally {
       setLoading(false);
@@ -93,7 +158,7 @@ function App() {
         await fetchCurrentTask(processInstanceId);
       }
     };
-    
+
     refreshTask();
   }, [processInstanceId, currentTask]);
 
@@ -101,41 +166,63 @@ function App() {
   const handleCompleteStep = async (formData) => {
     try {
       setLoading(true);
-      
+
       // Müşteri bilgilerini güncelle
-      const updatedCustomerData = {...customerData, ...formData};
+      const updatedCustomerData = { ...customerData, ...formData };
       setCustomerData(updatedCustomerData);
-      
+
       console.log('Müşteri bilgileri güncellendi:', updatedCustomerData);
-      
+
       // API'ye güncelleme isteği gönder
       const updateBody = {
         engagedParty: updatedCustomerData
       };
-      
+
       console.log('API güncelleme isteği gönderiliyor. OrderRequestId:', orderData.data.orderRequestId);
       const updateResponse = await updateOrderRequest(orderData.data.orderRequestId, updateBody);
       console.log('Sipariş güncelleme yanıtı:', updateResponse);
-      
+
       // Task'ı tamamla
       console.log('Task tamamlanıyor. TaskId:', currentTaskId);
       await completeTask(currentTaskId);
-      
+
       // Mevcut task'ı temizle
       setCurrentTask(null);
       setCurrentTaskId(null);
-      
+
       console.log('Task bilgisi temizlendi, yeni task bilgisi getiriliyor...');
-      
+
       // Yeni task bilgisini getir
-      const newTask = await fetchCurrentTask(processInstanceId);
-      console.log('Yeni task bilgisi:', newTask);
-      
-      // Eğer yeni task yoksa, tüm işlem tamamlanmış demektir
-      if (!newTask) {
-        console.log('İşlem tamamlandı, başarı ekranına yönlendiriliyor');
-        setCompleted(true);
-        setStep(6); // Tamamlanma adımı
+      try {
+        const newTask = await fetchCurrentTask(processInstanceId);
+        console.log('Yeni task bilgisi:', newTask);
+
+        // Eğer yeni task yoksa, tüm işlem tamamlanmış demektir
+        if (!newTask) {
+          console.log('İşlem tamamlandı, başarı ekranına yönlendiriliyor');
+          setCompleted(true);
+          setStep(7); // Tamamlanma adımı
+          setError(null); // Hata mesajını temizle
+        }
+      } catch (taskError) {
+        console.error('Yeni task bilgisi alınırken hata:', taskError);
+
+        // Özel hata durumlarını kontrol et
+        const isProcessCompletedError =
+          taskError.response?.status === 500 ||
+          taskError.message?.includes('No task found') ||
+          taskError.message?.includes('ProcessInstanceId not found') ||
+          taskError.message?.toLowerCase().includes('tamamlandı');
+
+        if (isProcessCompletedError) {
+          console.log('İşlem tamamlanmış olabilir, başarı ekranına yönlendiriliyor');
+          setCompleted(true);
+          setStep(7);
+          setError(null); // Hata mesajını temizle
+        } else {
+          // Süreç tamamlanmadıysa hatayı göster
+          setError('Sonraki adım bilgisi alınırken bir hata oluştu: ' + taskError.message);
+        }
       }
     } catch (err) {
       setError('İşlem sırasında bir hata oluştu: ' + err.message);
@@ -152,7 +239,7 @@ function App() {
       // Mevcut task'ı temizleme
       setCurrentTask(null);
       setCurrentTaskId(null);
-      
+
       // Task bilgisini güncelleme
       if (processInstanceId) {
         console.log("processInstanceId ile task bilgisi yenileniyor:", processInstanceId);
@@ -166,21 +253,35 @@ function App() {
   };
 
   const renderCurrentStep = () => {
-    if (!currentTask) return null;
+    if (!currentTask) {
+      console.log("renderCurrentStep: currentTask bulunamadı");
+      return null;
+    }
+
+    console.log("renderCurrentStep: Mevcut Task:", currentTask.taskDefinitionKey);
 
     // Task ID'ye göre uygun bileşeni göster
     switch (currentTask.taskDefinitionKey) {
       case 'UT_CustomerIdentity':
         return (
-          <CustomerIdentity 
+          <CustomerIdentity
             onComplete={handleCompleteStep}
             initialData={customerData}
             loading={loading}
           />
         );
+      case 'UT_MernisFeedback':
+        return (
+          <CustomerMernisFeedback
+            onComplete={handleCompleteStep}
+            initialData={customerData}
+            orderData={{ orderData }}
+            loading={loading}
+          />
+        );
       case 'UT_CustomerContact':
         return (
-          <CustomerContact 
+          <CustomerContact
             onComplete={handleCompleteStep}
             initialData={customerData}
             orderData={orderData}
@@ -190,7 +291,7 @@ function App() {
         );
       case 'UT_CustomerAddress':
         return (
-          <CustomerAddress 
+          <CustomerAddress
             onComplete={handleCompleteStep}
             initialData={customerData}
             orderData={orderData}
@@ -217,6 +318,16 @@ function App() {
             onGoBack={handleTaskUpdate}
           />
         );
+      case 'UT_OrderSummary':
+        console.log("UT_OrderSummary bileşeni render ediliyor, orderData:", orderData);
+        return (
+          <OrderSummary
+            onComplete={handleCompleteStep}
+            orderData={orderData}
+            loading={loading}
+            onGoBack={handleTaskUpdate}
+          />
+        );
       default:
         return <div className="task-message">Bilinmeyen görev tipi: {currentTask.taskDefinitionKey}</div>;
     }
@@ -235,8 +346,8 @@ function App() {
         <div className="welcome-container">
           <h2>Hoş Geldiniz</h2>
           <p>Müşteri bilgilerinizi girmek için lütfen aşağıdaki butona tıklayın.</p>
-          <button 
-            onClick={handleInitializeOrder} 
+          <button
+            onClick={handleInitializeOrder}
             className="primary-button"
             disabled={loading}
           >
@@ -247,38 +358,21 @@ function App() {
 
       {orderData && !completed && (
         <div className="form-container">
-          <ProgressBar step={step} totalSteps={5} />
+          <ProgressBar step={step} totalSteps={7} />
           <div className="form-content">
             {loading && <div className="loading-overlay"><div className="spinner"></div></div>}
             {renderCurrentStep()}
           </div>
         </div>
       )}
-      
+
       {completed && (
         <div className="success-container">
           <div className="success-icon">✓</div>
           <h2>Tebrikler!</h2>
           <p>Tüm bilgiler başarıyla kaydedildi.</p>
-          <div className="summary">
-            <h3>Girilen Bilgiler:</h3>
-            <p><strong>TC Kimlik No:</strong> {customerData.tckn}</p>
-            <p><strong>Ad:</strong> {customerData.firstName}</p>
-            <p><strong>Soyad:</strong> {customerData.lastName}</p>
-            <p><strong>Telefon:</strong> {customerData.phoneNumber}</p>
-            <p><strong>Email:</strong> {customerData.email}</p>
-            <p><strong>Adres:</strong> {customerData.formattedAddress}</p>
-            {customerData.selectedProducts && customerData.selectedProducts.length > 0 && (
-              <>
-                <h3>Seçilen Ürünler:</h3>
-                {customerData.selectedProducts.map(product => (
-                  <p key={product.id}><strong>{product.name}</strong></p>
-                ))}
-              </>
-            )}
-          </div>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="primary-button"
           >
             Yeni Kayıt Başlat
@@ -291,14 +385,59 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
-        <header className="app-header">
-     
-        </header>
+        <NavbarWrapper />
+        <header className="app-header"></header>
         <Routes>
-          <Route path="/" element={<OrderProcess />} />
-          <Route path="/urunler" element={<ProductList />} />
-          <Route path="/urun-ekle" element={<AddProduct />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <OrderProcess />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/urunler"
+            element={
+              <ProtectedRoute>
+                <ProductList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/urun-ekle"
+            element={
+              <ProtectedRoute>
+                <AddProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/addon-ekle"
+            element={
+              <ProtectedRoute>
+                <AddonProductPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/addonlar"
+            element={
+              <ProtectedRoute>
+                <AddonList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/karakteristikler"
+            element={
+              <ProtectedRoute>
+                <CharacteristicList />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </Router>

@@ -1,0 +1,446 @@
+/* CommonStyles.css */
+
+/* Modal Backdrop */
+.addon-selection-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.addon-selection-content {
+  background-color: white;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.addon-selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.addon-selection-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.addon-selection-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.addon-selection-body {
+  padding: 20px;
+}
+
+.addon-selection-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-top: 1px solid var(--border-color);
+  gap: 10px;
+}
+
+/* Product Detail Modal */
+.product-detail-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.product-detail-content {
+  background-color: white;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.product-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.product-detail-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+}
+
+.product-detail-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.product-detail-body {
+  padding: 20px;
+}
+
+.product-detail-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Addon List in AddonSelectionModal */
+.addon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.addon-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--secondary-color);
+}
+
+.addon-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  color: var(--primary-color);
+}
+
+.addon-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.addon-characteristic {
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.addon-characteristic span {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+.addon-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.addon-status.mandatory {
+  background-color: #e57373;
+  color: white;
+}
+
+.addon-status.optional {
+  background-color: #81c784;
+  color: white;
+}
+
+.addon-select-button {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addon-select-button.selected {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.addon-select-button:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.addon-confirm-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.addon-confirm-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.addon-cancel-button {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.addon-cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Addon List in ProductDetailModal */
+.addons-section {
+  margin-top: 20px;
+}
+
+.addons-section h3 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.addon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.addon-item {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.addon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.addon-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.addon-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.addon-status.mandatory {
+  background-color: #e57373;
+  color: white;
+}
+
+.addon-status.optional {
+  background-color: #81c784;
+  color: white;
+}
+
+.addon-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.addon-characteristic {
+  font-size: 0.9rem;
+  display: flex;
+  gap: 5px;
+}
+
+.addon-characteristic span {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.addon-empty {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Notifications */
+.notification {
+  max-width: 600px;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.5s ease forwards;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.notification.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.notification.error {
+  background-color: #ffebee;
+  color: var(--error-color);
+  border-left: 4px solid var(--error-color);
+}
+
+.notification-message {
+  flex-grow: 1;
+  font-size: 0.9rem;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes slideIn {
+  from {
+      opacity: 0;
+      transform: translateY(-20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Addon Cart Item */
+.addon-cart-item {
+  border-left: 3px solid #1976d2;
+  margin-left: 10px;
+}
+
+.addon-label {
+  font-size: 0.8rem;
+  color: #1976d2;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .addon-item {
+      padding: 10px;
+  }
+
+  .addon-header {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .addon-status {
+      margin-left: 0;
+  }
+
+  .product-detail-content,
+  .addon-selection-content {
+      width: 95%;
+      max-height: 90vh;
+  }
+
+  .notification {
+      margin: 10px;
+      padding: 10px;
+      font-size: 0.85rem;
+  }
+}
+
+.no-infrastructure-message {
+  background-color: #ffebee;
+  color: var(--error-color);
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--error-color);
+}

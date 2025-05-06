@@ -1,0 +1,288 @@
+/* OrderSummaryStyles.css */
+
+.order-summary-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+  }
+  
+  .order-summary-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+  }
+  
+  .title-icon {
+    color: var(--primary-color);
+  }
+  
+  .order-summary-description {
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .order-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 30px;
+  }
+  
+  /* Ortak bölüm stilleri */
+  .order-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px var(--shadow-color);
+  }
+  
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  .product-count {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-left: 8px;
+  }
+  
+  /* Müşteri bilgileri bölümü */
+  .customer-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .info-group {
+    margin-bottom: 20px;
+  }
+  
+  .info-group.full-width {
+    grid-column: 1 / -1;
+  }
+  
+  .info-group h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+  }
+  
+  .info-item {
+    display: flex;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  
+  .info-label {
+    font-weight: 500;
+    width: 120px;
+    flex-shrink: 0;
+    color: #555;
+  }
+  
+  .info-value {
+    flex-grow: 1;
+  }
+  
+  /* Ürün listesi bölümü */
+  .order-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .order-product-group {
+    margin-bottom: 10px;
+  }
+  
+  .order-product-item {
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border-color);
+  }
+  
+  .order-product-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .order-product-item.main-product {
+    border-left: 3px solid var(--primary-color);
+  }
+  
+  .order-product-item.main-product.expanded {
+    background-color: #f9f9f9;
+  }
+  
+  .order-product-item.addon-product {
+    margin-left: 30px;
+    margin-top: 10px;
+    border-left: 3px solid #4caf50;
+    position: relative;
+  }
+  
+  .order-product-item.addon-product::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 15px;
+    height: 2px;
+    background-color: #ddd;
+  }
+  
+  .product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .product-title {
+    flex-grow: 1;
+  }
+  
+  .product-title h4 {
+    margin: 0 0 5px 0;
+    color: var(--primary-color);
+    font-size: 1rem;
+  }
+  
+  .product-code {
+    font-size: 0.8rem;
+    color: #666;
+  }
+  
+  .addon-label {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    border: 1px solid #2e7d32;
+  }
+  
+  .expand-icon {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+  }
+  
+  .product-details {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .product-characteristic {
+    display: flex;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .characteristic-name {
+    font-weight: 500;
+    width: 150px;
+    flex-shrink: 0;
+    color: #555;
+  }
+  
+  .characteristic-value {
+    flex-grow: 1;
+  }
+  
+  .addon-products-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Ödeme Bilgileri */
+  .payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .payment-note {
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    font-style: italic;
+    color: #666;
+    text-align: center;
+  }
+  
+  /* Boş sepet mesajı */
+  .empty-cart-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #666;
+  }
+  
+  .empty-cart-message svg {
+    margin-bottom: 10px;
+    color: #999;
+  }
+  
+  .empty-cart-message p {
+    font-size: 1rem;
+  }
+  
+  /* Siparişi Tamamla Butonu */
+  .complete-order-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding: 15px;
+    font-size: 1.1rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .order-section {
+      padding: 15px;
+    }
+    
+    .info-label {
+      width: 100px;
+    }
+    
+    .characteristic-name {
+      width: 120px;
+    }
+    
+    .order-product-item.addon-product {
+      margin-left: 15px;
+    }
+  }

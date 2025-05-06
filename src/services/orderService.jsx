@@ -9,7 +9,7 @@ export const initializeOrder = async () => {
     };
     
     const response = await api.post('/api/initialize/PRODUCT/create-order-request', requestBody, {
-      params: { channel: 'STARTER' }
+      params: { channel: 'CALL-CENTER' }
     });
     
     console.log('Sipariş başlatma başarılı:', response.data);

@@ -5,17 +5,21 @@ import {
   deleteOrderProducts,
   getOrderRequest,
   getProductByCode,
-  getProductsByBbk  // Yeni BBK ile ürün getirme fonksiyonu
+  getProductsByBbk
 } from '../../services/productService';
+import { getAddonsForMainProduct } from '../../services/addonService';
 import '../../styles/FormStyles.css';
+import '../../styles/CommonStyles.css';
 import { sendMessage } from '../../services/taskService';
-import { ChevronDown, ChevronUp, Trash2, ShoppingCart, X, AlertCircle, Info, Plus, Wifi } from 'lucide-react';
-import { getMaxSpeedInfo } from '../../services/infrastructureService'; // Yeni eklenecek servis
+import { ChevronDown, ChevronUp, Trash2, ShoppingCart, X, AlertCircle, Info, Plus, Wifi, CheckCircle } from 'lucide-react';
+import { getMaxSpeedInfo } from '../../services/infrastructureService';
 
 // Ürün Detayları Popup Bileşeni
 const ProductDetailModal = ({ product, onClose }) => {
   const [productDetails, setProductDetails] = useState(null);
+  const [addons, setAddons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [addonLoading, setAddonLoading] = useState(true);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -32,7 +36,22 @@ const ProductDetailModal = ({ product, onClose }) => {
       }
     };
 
+    const fetchAddons = async () => {
+      try {
+        setAddonLoading(true);
+        if (product?.id) {
+          const response = await getAddonsForMainProduct(product.id);
+          setAddons(response.data || []);
+        }
+      } catch (error) {
+        console.error("Addon getirme hatası:", error);
+      } finally {
+        setAddonLoading(false);
+      }
+    };
+
     fetchProductDetails();
+    fetchAddons();
   }, [product]);
 
   if (!product) return null;
@@ -42,7 +61,7 @@ const ProductDetailModal = ({ product, onClose }) => {
       <div className="product-detail-content" onClick={e => e.stopPropagation()}>
         <div className="product-detail-header">
           <h2>{product.name}</h2>
-          <button className="product-detail-close" onClick={onClose}>&times;</button>
+          <button className="product-detail-close" onClick={onClose}>×</button>
         </div>
         <div className="product-detail-body">
           {loading ? (
@@ -90,6 +109,38 @@ const ProductDetailModal = ({ product, onClose }) => {
                   ))}
                 </div>
               )}
+
+              <div className="addons-section">
+                <h3>İlişkili Addon Ürünler</h3>
+                {addonLoading ? (
+                  <div className="loading-indicator">
+                    <div className="spinner"></div>
+                  </div>
+                ) : addons.length === 0 ? (
+                  <p>Bu ürüne ait addon ürün bulunmamaktadır.</p>
+                ) : (
+                  <div className="addon-list">
+                    {addons.map(addon => (
+                      <div key={addon.id} className="addon-item">
+                        <div className="addon-header">
+                          <h4>{addon.addonProduct.name}</h4>
+                          <span className={`addon-status ${addon.mandatory ? 'mandatory' : 'optional'}`}>
+                            {addon.mandatory ? 'Zorunlu' : 'İsteğe Bağlı'}
+                          </span>
+                        </div>
+                        <div className="addon-code">Kod: {addon.addonProduct.code}</div>
+                        {addon.addonProduct.specifications?.flatMap(spec =>
+                          spec.characteristics?.filter(char => char.value).map(char => (
+                            <div key={char.code} className="addon-characteristic">
+                              <span>{char.name || char.code}:</span> {char.value}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -102,6 +153,79 @@ const ProductDetailModal = ({ product, onClose }) => {
             }}
           >
             <X size={16} /> Kapat
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Addon Seçimi Modal Bileşeni
+const AddonSelectionModal = ({ addons, onConfirm, onClose, mainProduct }) => {
+  const [selectedAddons, setSelectedAddons] = useState([]);
+
+  const handleToggleAddon = (addon) => {
+    if (addon.mandatory) return; // Zorunlu addon'lar değiştirilemez
+    const isSelected = selectedAddons.some(a => a.id === addon.id);
+    if (isSelected) {
+      setSelectedAddons(selectedAddons.filter(a => a.id !== addon.id));
+    } else {
+      setSelectedAddons([...selectedAddons, addon]);
+    }
+  };
+
+  return (
+    <div className="addon-selection-modal-backdrop" onClick={onClose}>
+      <div className="addon-selection-content" onClick={e => e.stopPropagation()}>
+        <div className="addon-selection-header">
+          <h2>{mainProduct.name} için Addon Seçimi</h2>
+          <button className="addon-selection-close" onClick={onClose}>×</button>
+        </div>
+        <div className="addon-selection-body">
+          {addons.length === 0 ? (
+            <p>Addon ürün bulunmamaktadır.</p>
+          ) : (
+            <div className="addon-list">
+              {addons.map(addon => (
+                <div key={addon.id} className="addon-item">
+                  <div className="addon-info">
+                    <h4>{addon.addonProduct.name}</h4>
+                    <div className="addon-code">Kod: {addon.addonProduct.code}</div>
+                    <span className={`addon-status ${addon.mandatory ? 'mandatory' : 'optional'}`}>
+                      {addon.mandatory ? 'Zorunlu' : 'İsteğe Bağlı'}
+                    </span>
+                    {addon.addonProduct.specifications?.flatMap(spec =>
+                      spec.characteristics?.filter(char => char.value).map(char => (
+                        <div key={char.code} className="addon-characteristic">
+                          <span>{char.name || char.code}:</span> {char.value}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <button
+                    className={`addon-select-button ${addon.mandatory || selectedAddons.some(a => a.id === addon.id) ? 'selected' : ''}`}
+                    onClick={() => handleToggleAddon(addon)}
+                    disabled={addon.mandatory}
+                  >
+                    {addon.mandatory ? 'Zorunlu' : selectedAddons.some(a => a.id === addon.id) ? 'Seçildi' : 'Seç'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="addon-selection-footer">
+          <button
+            className="addon-cancel-button"
+            onClick={onClose}
+          >
+            <X size={16} /> İptal
+          </button>
+          <button
+            className="addon-confirm-button"
+            onClick={() => onConfirm(selectedAddons)}
+          >
+            <CheckCircle size={16} /> Onayla
           </button>
         </div>
       </div>
@@ -160,11 +284,11 @@ const ProductCard = ({ product, onAddToCart, onViewDetails }) => {
   );
 };
 
-const CartItem = ({ product, onRemove, onViewDetails }) => {
+const CartItem = ({ product, onRemove, onViewDetails, isAddon }) => {
   return (
-    <div className="cart-item">
+    <div className={`cart-item ${isAddon ? 'addon-cart-item' : ''}`}>
       <div className="cart-item-content" onClick={() => onViewDetails(product)}>
-        <h4>{product.name}</h4>
+        <h4>{product.name} {isAddon && <span className="addon-label">(Addon)</span>}</h4>
         <div className="cart-item-characteristics">
           {product.characteristics && product.characteristics.slice(0, 2).map(char => (
             <div key={char.id} className="characteristic">
@@ -192,9 +316,17 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [addonModalProduct, setAddonModalProduct] = useState(null);
+  const [addons, setAddons] = useState([]);
   const [bbk, setBbk] = useState(null);
   const [maxSpeedInfo, setMaxSpeedInfo] = useState(null);
+  const [hasInfrastructure, setHasInfrastructure] = useState(true); // New state for infrastructure availability
   const [usingBbkProducts, setUsingBbkProducts] = useState(false);
+  const [notification, setNotification] = useState({
+    show: false,
+    type: '',
+    message: ''
+  });
 
   // Sipariş detaylarını getiren ve güncelleyen fonksiyon
   const fetchOrderDetails = useCallback(async () => {
@@ -249,12 +381,30 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
   // BBK ile maksimum hız bilgisini getir
   const fetchMaxSpeedInfo = async (bbkValue) => {
     try {
-      const speedInfo = await getMaxSpeedInfo(bbkValue);
-      if (speedInfo && speedInfo.data) {
-        setMaxSpeedInfo(speedInfo.data);
+      const response = await getMaxSpeedInfo(bbkValue);
+      console.log('Max Speed Response:', response);
+      if (response && response.data && Object.keys(response.data).length > 0) {
+        setMaxSpeedInfo(response.data);
+        setHasInfrastructure(true); // Infrastructure exists
+      } else {
+        setMaxSpeedInfo(null);
+        setHasInfrastructure(false); // No infrastructure
       }
     } catch (err) {
       console.error('Maksimum hız bilgisi getirme hatası:', err);
+      setHasInfrastructure(false); // Treat error as no infrastructure
+    }
+  };
+
+  // Addon'ları getir
+  const fetchAddons = async (mainProductId) => {
+    try {
+      const response = await getAddonsForMainProduct(mainProductId);
+      return response.data || [];
+    } catch (err) {
+      console.error('Addon getirme hatası:', err);
+      showNotification('error', 'Addon ürünleri yüklenirken bir hata oluştu');
+      return [];
     }
   };
 
@@ -290,11 +440,45 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         throw new Error('Order Request ID bulunamadı');
       }
 
-      await updateOrderProducts(orderRequestId, product.code);
-      await fetchOrderDetails(); // Sepeti güncellemek için
-      setError(null); // Başarılı işlem sonrası hata mesajını temizle
+      // Addon'ları getir
+      const addons = await fetchAddons(product.id);
+      const mandatoryAddons = addons.filter(addon => addon.mandatory);
+      const optionalAddons = addons.filter(addon => !addon.mandatory);
+
+      // Zorunlu addon'ları otomatik ekle ve bildir
+      if (mandatoryAddons.length > 0) {
+        const mandatoryNames = mandatoryAddons.map(addon => addon.addonProduct.name).join(', ');
+        showNotification('success', `Zorunlu addon ürünler eklendi: ${mandatoryNames}`);
+      }
+
+      // Tüm addon'ları modalda göster
+      setAddonModalProduct(product);
+      setAddons(addons);
     } catch (err) {
       setError('Ürün güncelleme hatası: ' + err.message);
+    } finally {
+      setLocalLoading(false);
+    }
+  };
+
+  // Ürün ve addon'ları sepete ekle
+  const addProductsToCart = async (mainProduct, selectedAddons) => {
+    try {
+      setLocalLoading(true);
+      const orderRequestId = orderData?.data?.orderRequestId;
+
+      // Ana ürünü ekle
+      await updateOrderProducts(orderRequestId, mainProduct.code);
+
+      // Addon'ları ekle
+      for (const addon of selectedAddons) {
+        await updateOrderProducts(orderRequestId, addon.addonProduct.code);
+      }
+
+      await fetchOrderDetails(); // Sepeti güncelle
+      setError(null);
+    } catch (err) {
+      setError('Ürün ve addon ekleme hatası: ' + err.message);
     } finally {
       setLocalLoading(false);
     }
@@ -310,9 +494,9 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         throw new Error('Order Request ID bulunamadı');
       }
 
-      await deleteOrderProducts(orderRequestId, product.mainProductCode);
-      await fetchOrderDetails(); // Sepeti güncellemek için
-      setError(null); // Başarılı işlem sonrası hata mesajını temizle
+      await deleteOrderProducts(orderRequestId, product.mainProductCode || product.code);
+      await fetchOrderDetails(); // Sepeti güncelle
+      setError(null);
     } catch (err) {
       setError('Ürün silme hatası: ' + err.message);
     } finally {
@@ -354,6 +538,36 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
     setSelectedProduct(null);
   };
 
+  // Addon seçimini onayla
+  const handleConfirmAddons = async (selectedAddons) => {
+    const mandatoryAddons = addons.filter(a => a.mandatory);
+    await addProductsToCart(addonModalProduct, [
+      ...mandatoryAddons, // Zorunlu addon'ları ekle
+      ...selectedAddons // Kullanıcının seçtiği addon'ları ekle
+    ]);
+    setAddonModalProduct(null);
+    setAddons([]);
+  };
+
+  // Addon seçim modalını kapat
+  const closeAddonModal = () => {
+    setAddonModalProduct(null);
+    setAddons([]);
+  };
+
+  // Bildirim gösterme
+  const showNotification = (type, message) => {
+    setNotification({
+      show: true,
+      type,
+      message
+    });
+
+    setTimeout(() => {
+      setNotification({ show: false, type: '', message: '' });
+    }, 5000);
+  };
+
   return (
     <div className="product-selection-container">
       {(loading || localLoading) && (
@@ -361,67 +575,88 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
           <div className="spinner"></div>
         </div>
       )}
-      
-      {/* Maksimum hız bilgisi */}
-      {maxSpeedInfo && <MaxSpeedInfo speedInfo={maxSpeedInfo} />}
-      
-      <div className="product-selection-grid">
-        <div className="product-catalog">
-          <h2>
-            Ürün Kataloğu
-            {usingBbkProducts && bbk && (
-              <span className="bbk-products-note"> (BBK: {bbk})</span>
-            )}
-          </h2>
-          {error && (
-            <div className="error-banner">
-              <AlertCircle size={16} /> {error}
-            </div>
-          )}
-          <div className="product-grid">
-            {products.length > 0 ? (
-              products.map(product => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onAddToCart={handleProductAdd}
-                  onViewDetails={handleViewDetails}
-                />
-              ))
-            ) : (
-              <div className="empty-cart">
-                <p>Ürün kataloğu yükleniyor veya ürün bulunamadı</p>
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="cart-section">
-          <h2>
-            <ShoppingCart size={20} /> Sepet 
-            {orderDetails?.products?.length > 0 && 
-              <span className="cart-count">({orderDetails.products.length})</span>
-            }
-          </h2>
-          
-          {orderDetails?.products && orderDetails.products.length > 0 ? (
-            <div className="cart-items">
-              {orderDetails.products.map(product => (
-                <CartItem 
-                  key={product.id} 
-                  product={product} 
-                  onRemove={handleProductRemove}
-                  onViewDetails={handleViewDetails}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-cart">
-              <p>Sepetiniz henüz boş</p>
-            </div>
-          )}
+      {notification.show && (
+        <div className={`notification ${notification.type === 'success' ? 'success-notification' : 'error-notification'}`}>
+          {notification.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+          <div className="notification-message">{notification.message}</div>
+          <button className="notification-close" onClick={() => setNotification({ show: false, type: '', message: '' })}>
+            <X size={16} />
+          </button>
         </div>
-      </div>
+      )}
+      
+      {/* Conditional Rendering Based on Infrastructure Availability */}
+      {!hasInfrastructure ? (
+        <div className="error-banner">
+          <AlertCircle size={16} /> 
+          Bu adreste internet altyapısı bulunmamaktadır. Lütfen başka bir adres deneyin veya destek ekibiyle iletişime geçin.
+        </div>
+      ) : (
+        <>
+          {/* Maksimum hız bilgisi */}
+          {maxSpeedInfo && <MaxSpeedInfo speedInfo={maxSpeedInfo} />}
+          
+          <div className="product-selection-grid">
+            <div className="product-catalog">
+              <h2>
+                Ürün Kataloğu
+                {usingBbkProducts && bbk && (
+                  <span className="bbk-products-note"> (BBK: {bbk})</span>
+                )}
+              </h2>
+              {error && (
+                <div className="error-banner">
+                  <AlertCircle size={16} /> {error}
+                </div>
+              )}
+              <div className="product-grid">
+                {products.length > 0 ? (
+                  products.map(product => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product} 
+                      onAddToCart={handleProductAdd}
+                      onViewDetails={handleViewDetails}
+                    />
+                  ))
+                ) : (
+                  <div className="empty-cart">
+                    <p>Ürün kataloğu yükleniyor veya ürün bulunamadı</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="cart-section">
+              <h2>
+                <ShoppingCart size={20} /> Sepet 
+                {orderDetails?.products?.length > 0 && 
+                  <span className="cart-count">({orderDetails.products.length})</span>
+                }
+              </h2>
+              
+              {orderDetails?.products && orderDetails.products.length > 0 ? (
+                <div className="cart-items">
+                  {orderDetails.products.map(product => (
+                    <CartItem 
+                      key={product.id} 
+                      product={product} 
+                      onRemove={handleProductRemove}
+                      onViewDetails={handleViewDetails}
+                      isAddon={product.isAddon || false}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-cart">
+                  <p>Sepetiniz henüz boş</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="form-actions">
         <button 
@@ -437,7 +672,7 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
           type="button" 
           className="primary-button"
           onClick={() => onComplete(orderDetails?.products || [])}
-          disabled={loading || localLoading || !orderDetails?.products?.length}
+          disabled={loading || localLoading || !hasInfrastructure || !orderDetails?.products?.length}
         >
           {loading || localLoading ? 'İşlem yapılıyor...' : 'Devam Et'}
         </button>
@@ -448,6 +683,16 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         <ProductDetailModal 
           product={selectedProduct} 
           onClose={closeProductDetail} 
+        />
+      )}
+
+      {/* Addon Seçim Modalı */}
+      {addonModalProduct && (
+        <AddonSelectionModal
+          addons={addons}
+          onConfirm={handleConfirmAddons}
+          onClose={closeAddonModal}
+          mainProduct={addonModalProduct}
         />
       )}
     </div>

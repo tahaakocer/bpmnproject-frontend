@@ -1,0 +1,196 @@
+/* Addon Liste Sayfası Stilleri */
+
+.addon-list-table {
+  width: 100%;
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.addon-list-table table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.addon-list-table thead {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.addon-list-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--primary-dark);
+}
+
+.addon-list-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.addon-list-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.addon-list-table tbody tr:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.addon-list-table td {
+  padding: 15px;
+  vertical-align: middle;
+}
+
+.main-product-cell, .addon-product-cell {
+  min-width: 200px;
+}
+
+.product-name {
+  font-weight: 500;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+}
+
+.product-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.not-available {
+  color: #999;
+  font-style: italic;
+}
+
+.mandatory-cell {
+  text-align: center;
+}
+
+.mandatory-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.mandatory-yes {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+}
+
+.mandatory-no {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.date-cell {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.actions-cell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.actions-cell button {
+  margin-left: 8px;
+}
+
+.delete-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--error-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+.info-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.info-button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Detay modalı ek stilleri */
+.characteristics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.specification-section {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.specification-section h4 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.specification-section:last-child {
+  border-bottom: none;
+}
+
+.modal-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Responsive tasarım */
+@media (max-width: 992px) {
+  .addon-list-table {
+    overflow-x: auto;
+  }
+  
+  .characteristics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-detail-content {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .product-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

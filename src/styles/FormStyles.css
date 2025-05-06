@@ -1,4 +1,6 @@
-/* Form adımları */
+/* FormStyles.css */
+
+/* Form Steps */
 .form-step {
   padding: 10px 0;
 }
@@ -13,7 +15,7 @@
   margin-bottom: 20px;
 }
 
-/* Form grupları ve elemanları */
+/* Form Groups and Elements */
 .form-group {
   margin-bottom: 20px;
 }
@@ -25,7 +27,7 @@
   color: #555;
 }
 
-.form-group input, 
+.form-group input,
 .form-group textarea {
   width: 100%;
   padding: 12px;
@@ -37,14 +39,14 @@
   color: var(--text-color);
 }
 
-.form-group input:focus, 
+.form-group input:focus,
 .form-group textarea:focus {
   border-color: var(--primary-color);
   outline: none;
   box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
 }
 
-.form-group input:disabled, 
+.form-group input:disabled,
 .form-group textarea:disabled {
   background-color: #f5f5f5;
   cursor: not-allowed;
@@ -57,7 +59,7 @@
   display: block;
 }
 
-/* FormStyles.css'e ekleyin */
+/* Form Actions */
 .form-actions {
   display: flex;
   justify-content: space-between;
@@ -85,7 +87,7 @@
   cursor: not-allowed;
 }
 
-/* İnceleme sayfası stilleri */
+/* Review Page Styles */
 .review-container {
   background-color: var(--secondary-color);
   border-radius: 8px;
@@ -124,7 +126,7 @@
   justify-content: center;
 }
 
-/* Ürün seçimi ve sepet düzeni */
+/* Product Selection and Cart Layout */
 .product-selection-container {
   display: flex;
   flex-direction: column;
@@ -139,15 +141,15 @@
   min-height: 400px;
 }
 
-/* Ürün Kataloğu */
+/* Product Catalog */
 .product-catalog {
   background-color: white;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .product-catalog h2 {
@@ -171,7 +173,7 @@
   background-color: var(--secondary-color);
   border-radius: 10px;
   padding: 15px;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -230,7 +232,7 @@
   background-color: var(--primary-dark);
 }
 
-/* Sepet Bölümü */
+/* Cart Section */
 .cart-section {
   background-color: white;
   border-radius: 12px;
@@ -261,7 +263,6 @@
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
-  margin-left: 10px;
 }
 
 .cart-items {
@@ -338,21 +339,7 @@
   margin-bottom: 20px;
 }
 
-/* Responsive tasarım */
-@media (max-width: 768px) {
-  .product-selection-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .product-grid {
-    max-height: 300px;
-  }
-  
-  .cart-items {
-    max-height: 300px;
-  }
-}
-/* Maksimum Hız Bilgisi */
+/* Max Speed Info */
 .max-speed-info {
   background-color: #f8f9fa;
   border-radius: 10px;
@@ -402,7 +389,6 @@
   font-size: 0.9rem;
 }
 
-/* BBK Ürünleri için not */
 .bbk-products-note {
   font-size: 0.8rem;
   color: #666;
@@ -410,7 +396,17 @@
   margin-left: 10px;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
+  .product-selection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid,
+  .cart-items {
+    max-height: 300px;
+  }
+
   .max-speed-content {
     flex-direction: column;
     align-items: flex-start;

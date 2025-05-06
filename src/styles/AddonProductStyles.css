@@ -1,0 +1,380 @@
+/* AddonProductStyles.css */
+
+/* Main Product List */
+.main-product-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.main-product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.main-product-item:last-child {
+  border-bottom: none;
+}
+
+.main-product-item:hover {
+  background-color: #f5f5f5;
+}
+
+.main-product-item.selected {
+  background-color: var(--hover-color);
+  border-left: 3px solid var(--primary-color);
+}
+
+.main-product-info h4 {
+  margin: 0 0 5px 0;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+.main-product-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.selected-icon {
+  background-color: var(--primary-color);
+  color: white;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Addon Product List */
+.addon-product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.addon-product-item {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.addon-product-item:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-3px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.addon-product-item.selected {
+  background-color: var(--hover-color);
+  border-color: var(--primary-color);
+}
+
+.addon-product-info h4 {
+  margin: 0 0 5px 0;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+.addon-product-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.addon-product-item .selected-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+/* Loading Indicator */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.loading-container .spinner {
+  margin-bottom: 15px;
+}
+
+/* Selected Products Section */
+.no-selection-message,
+.no-addons-message {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.selected-product-container {
+  margin-top: 15px;
+}
+
+.selected-main-product {
+  background-color: var(--secondary-color);
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.selected-main-product h4 {
+  margin: 0 0 10px 0;
+  color: var(--primary-color);
+}
+
+.selected-main-product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.product-name {
+  font-weight: 500;
+}
+
+.product-code {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.selected-addons-title {
+  display: flex;
+  align-items: center;
+  margin: 20px 0 15px;
+  color: var(--primary-color);
+}
+
+.selected-count {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 0.8rem;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.selected-addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.selected-addon-item {
+  background-color: var(--secondary-color);
+  border-radius: 6px;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.addon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.addon-info h5 {
+  margin: 0 0 5px 0;
+  color: var(--primary-color);
+}
+
+.addon-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #e3f2fd;
+  color: var(--primary-color);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-button:hover {
+  background-color: #bbdefb;
+}
+
+.mandatory-toggle {
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mandatory-toggle.mandatory {
+  background-color: #4caf50;
+  color: white;
+  border-color: #4caf50;
+}
+
+.addon-characteristics {
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.char-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.char-item {
+  background-color: white;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.char-name {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+.no-chars {
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.addon-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-addon-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.save-addon-button:hover {
+  background-color: var(--primary-dark);
+}
+
+.save-addon-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Editing Mode */
+.editing-addon {
+  background-color: white;
+  border-radius: 4px;
+  padding: 15px;
+  border: 1px solid var(--primary-color);
+}
+
+.editing-addon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.editing-addon-header h5 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.editing-addon-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.save-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.cancel-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Addons Section */
+.addons-section {
+  margin-top: 20px;
+}
+
+.addons-section h3 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.addons-section .addon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .addon-product-list {
+    grid-template-columns: 1fr;
+  }
+}

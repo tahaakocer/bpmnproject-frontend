@@ -1,0 +1,72 @@
+/* MernisFeedbackStyles.css */
+
+.mernis-feedback-content {
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .mernis-feedback-section {
+    margin-bottom: 25px;
+  }
+  
+  .mernis-feedback-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .mernis-feedback-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+  
+  .mernis-feedback-section ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .mernis-feedback-section li {
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  
+  .mernis-feedback-section p {
+    line-height: 1.6;
+  }
+  
+  /* Özelleştirilmiş uyarı kutusu */
+  .mernis-alert {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .mernis-alert-icon {
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  
+  .mernis-alert-content {
+    flex-grow: 1;
+  }
+  
+  /* Responsive tasarım */
+  @media (max-width: 768px) {
+    .mernis-feedback-content {
+      padding: 15px;
+    }
+    
+    .mernis-feedback-section h3 {
+      font-size: 1rem;
+    }
+  }

@@ -61,3 +61,12 @@
       max-height: 150px;
     }
   }
+  .dropdown-option.focused {
+    background-color: #e6f2ff;
+    border-left: 3px solid var(--primary-color, #1976d2);
+  }
+  
+  .dropdown-selected:focus {
+    outline: 2px solid var(--primary-color, #1976d2);
+    outline-offset: -1px;
+  }

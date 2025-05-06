@@ -16,7 +16,87 @@ import {
 } from '../../services/addressService';
 
 // Dropdown bileşeni
-const AddressDropdown = ({ label, value, options, onSelect, isOpen, onToggle, placeholder, disabled, error }) => {
+const AddressDropdown = ({ 
+  label, 
+  value, 
+  options, 
+  onSelect, 
+  isOpen, 
+  onToggle, 
+  placeholder, 
+  disabled, 
+  error 
+}) => {
+  // Klavye navigasyonu için bir referans oluşturalım
+  const optionsRef = React.useRef(null);
+  const [focusedIndex, setFocusedIndex] = React.useState(-1);
+  
+  // Dropdown açıldığında ilk öğeye odaklanmak için
+  React.useEffect(() => {
+    if (isOpen) {
+      setFocusedIndex(-1);
+    }
+  }, [isOpen]);
+  
+  // Klavye ile harflere basıldığında ilgili seçeneklere gitme
+  const handleKeyDown = (e) => {
+    if (!isOpen || !options.length) return;
+    
+    if (e.key === 'Escape') {
+      onToggle();
+      return;
+    }
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setFocusedIndex(prev => (prev < options.length - 1 ? prev + 1 : prev));
+      return;
+    }
+    
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setFocusedIndex(prev => (prev > 0 ? prev - 1 : 0));
+      return;
+    }
+    
+    if (e.key === 'Enter' && focusedIndex >= 0) {
+      onSelect(options[focusedIndex]);
+      return;
+    }
+    
+    // Klavyeden basılan harfe göre seçenekler arasında gezinme
+    if (e.key.length === 1 && e.key.match(/[a-z0-9]/i)) {
+      const char = e.key.toLowerCase();
+      
+      // O harfle başlayan ilk öğeyi bul
+      const foundIndex = options.findIndex(option => 
+        option.name.toLowerCase().startsWith(char)
+      );
+      
+      if (foundIndex !== -1) {
+        setFocusedIndex(foundIndex);
+        
+        // Bulunan öğeye kaydır
+        if (optionsRef.current) {
+          const optionElements = optionsRef.current.querySelectorAll('.dropdown-option');
+          if (optionElements[foundIndex]) {
+            optionElements[foundIndex].scrollIntoView({ block: 'nearest' });
+          }
+        }
+      }
+    }
+  };
+  
+  // Odaklanan seçeneğin görünür olmasını sağlamak için
+  React.useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && optionsRef.current) {
+      const optionElements = optionsRef.current.querySelectorAll('.dropdown-option');
+      if (optionElements[focusedIndex]) {
+        optionElements[focusedIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [focusedIndex, isOpen]);
+  
   return (
     <div className="form-group">
       <label>{label}</label>
@@ -24,17 +104,19 @@ const AddressDropdown = ({ label, value, options, onSelect, isOpen, onToggle, pl
         <div
           className="dropdown-selected"
           onClick={onToggle}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
         >
           {value || placeholder || 'Seçiniz'}
           <span className="dropdown-arrow">▼</span>
         </div>
         {isOpen && (
-          <div className="dropdown-options">
+          <div className="dropdown-options" ref={optionsRef}>
             {options.length > 0 ? (
-              options.map((option) => (
+              options.map((option, index) => (
                 <div
                   key={option.code}
-                  className="dropdown-option"
+                  className={`dropdown-option ${focusedIndex === index ? 'focused' : ''}`}
                   onClick={() => onSelect(option)}
                 >
                   {option.name}
