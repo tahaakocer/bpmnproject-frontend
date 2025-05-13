@@ -12,7 +12,45 @@ import '../../styles/FormStyles.css';
 import '../../styles/CommonStyles.css';
 import { sendMessage } from '../../services/taskService';
 import { ChevronDown, ChevronUp, Trash2, ShoppingCart, X, AlertCircle, Info, Plus, Wifi, CheckCircle } from 'lucide-react';
-import { getMaxSpeedInfo } from '../../services/infrastructureService';
+import { getInfrastructureInfo } from '../../services/infrastructureService';
+
+// Maksimum Hız Bilgisi Bileşeni
+const MaxSpeedInfo = ({ speedInfo }) => {
+  if (!speedInfo) return null;
+
+  // Hangi bağlantı tipinin mevcut olduğunu kontrol et
+  const hasFiber = speedInfo.hasFiber;
+  const hasVdsl = speedInfo.hasVdsl;
+  const hasAdsl = speedInfo.hasAdsl;
+  
+  // En iyi bağlantı tipini belirle (öncelik: Fiber > VDSL > ADSL)
+  let connectionType = '';
+  if (hasFiber) {
+    connectionType = 'Fiber';
+  } else if (hasVdsl) {
+    connectionType = 'VDSL';
+  } else if (hasAdsl) {
+    connectionType = 'ADSL';
+  } else {
+    return null; // Hiçbir bağlantı tipi yoksa bilgi gösterme
+  }
+
+  return (
+    <div className="max-speed-info">
+      <div className="max-speed-header">
+        <Wifi size={18} />
+        <h3>Adresinizde Mevcut İnternet Altyapısı</h3>
+      </div>
+      <div className="max-speed-content">
+        <div className="speed-type">{connectionType}</div>
+        <div className="speed-value">{speedInfo.maxSpeed} Mbps</div>
+        <div className="speed-description">
+          Bu lokasyonda alabileceğiniz maksimum internet hızı
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Ürün Detayları Popup Bileşeni
 const ProductDetailModal = ({ product, onClose }) => {
@@ -233,34 +271,6 @@ const AddonSelectionModal = ({ addons, onConfirm, onClose, mainProduct }) => {
   );
 };
 
-// Maksimum Hız Bilgisi Bileşeni
-const MaxSpeedInfo = ({ speedInfo }) => {
-  if (!speedInfo) return null;
-
-  const hasVdsl = speedInfo.vdsl !== undefined;
-  const hasAdsl = speedInfo.adsl !== undefined;
-  const speedValue = hasVdsl ? speedInfo.vdsl : (hasAdsl ? speedInfo.adsl : null);
-  const speedType = hasVdsl ? 'VDSL' : (hasAdsl ? 'ADSL' : '');
-
-  if (speedValue === null) return null;
-
-  return (
-    <div className="max-speed-info">
-      <div className="max-speed-header">
-        <Wifi size={18} />
-        <h3>Adresinizde Mevcut İnternet Altyapısı</h3>
-      </div>
-      <div className="max-speed-content">
-        <div className="speed-type">{speedType}</div>
-        <div className="speed-value">{speedValue} Mbps</div>
-        <div className="speed-description">
-          Bu lokasyonda alabileceğiniz maksimum internet hızı
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const ProductCard = ({ product, onAddToCart, onViewDetails }) => {
   return (
     <div className="product-card">
@@ -344,8 +354,8 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
           // BBK ile ürünleri getir
           await fetchProductsByBbk(bbkValue);
           
-          // BBK ile maksimum hız bilgisini getir
-          await fetchMaxSpeedInfo(bbkValue);
+          // BBK ile altyapı bilgisini getir
+          await fetchInfrastructureInfo(bbkValue);
         }
       }
     } catch (err) {
@@ -378,21 +388,28 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
     }
   };
 
-  // BBK ile maksimum hız bilgisini getir
-  const fetchMaxSpeedInfo = async (bbkValue) => {
+  // BBK ile altyapı bilgisini getir
+  const fetchInfrastructureInfo = async (bbkValue) => {
     try {
-      const response = await getMaxSpeedInfo(bbkValue);
-      console.log('Max Speed Response:', response);
-      if (response && response.data && Object.keys(response.data).length > 0) {
-        setMaxSpeedInfo(response.data);
-        setHasInfrastructure(true); // Infrastructure exists
+      setLocalLoading(true);
+      const response = await getInfrastructureInfo(bbkValue);
+      console.log('Altyapı Bilgisi:', response);
+      if (response) {
+        setMaxSpeedInfo(response);
+        
+        // Altyapı var mı kontrol et - fiber, vdsl veya adsl'den en az biri varsa altyapı vardır
+        const hasAnyInfrastructure = response.hasFiber || response.hasVdsl || response.hasAdsl;
+        setHasInfrastructure(hasAnyInfrastructure);
       } else {
         setMaxSpeedInfo(null);
-        setHasInfrastructure(false); // No infrastructure
+        setHasInfrastructure(false); // Altyapı yok
       }
     } catch (err) {
-      console.error('Maksimum hız bilgisi getirme hatası:', err);
-      setHasInfrastructure(false); // Treat error as no infrastructure
+      console.error('Altyapı bilgisi getirme hatası:', err);
+      setHasInfrastructure(false); // Hata durumunda altyapı yok varsayalım
+      setMaxSpeedInfo(null);
+    } finally {
+      setLocalLoading(false);
     }
   };
 
@@ -415,6 +432,12 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
         setLocalLoading(true);
         await fetchOrderDetails();
         
+        // BBK bilgisini kullanarak altyapı bilgisi ve ürünleri getir
+        if (bbk) {
+          await fetchInfrastructureInfo(bbk);
+          await fetchProductsByBbk(bbk);
+        }
+        
         // BBK yoksa veya BBK ürünleri getirilemezse tüm ürünleri getir
         if (!usingBbkProducts && products.length === 0) {
           const productCatalog = await getAllProductCatalog();
@@ -428,7 +451,7 @@ const CustomerAddProduct = ({ onComplete, orderData, loading, onGoBack }) => {
     };
 
     fetchData();
-  }, [fetchOrderDetails, usingBbkProducts, products.length]);
+  }, [fetchOrderDetails, bbk, usingBbkProducts, products.length]);
 
   // Ürün ekleme
   const handleProductAdd = async (product) => {

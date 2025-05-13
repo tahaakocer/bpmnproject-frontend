@@ -100,19 +100,14 @@ export const getDistrictsByCity = async (cityCode) => {
       params: { cityCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const districts = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const districts = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return districts;
+      return districts;
+    }
+    return [];
   } catch (error) {
     console.error('İlçe verileri alınırken hata oluştu:', error);
     throw error;
@@ -126,71 +121,35 @@ export const getTownshipsByDistrict = async (districtCode) => {
       params: { districtCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const townships = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const townships = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return townships;
+      return townships;
+    }
+    return [];
   } catch (error) {
     console.error('Bucak verileri alınırken hata oluştu:', error);
     throw error;
   }
 };
 
-// Bucak koduna göre köyler
-export const getVillagesByTownship = async (townshipCode) => {
+// Bucak koduna göre mahalleler
+export const getNeighborhoodsByTownship = async (townshipCode) => {
   try {
-    const response = await api.get(`${API_BASE_URL}/villages`, {
+    const response = await api.get(`${API_BASE_URL}/neighborhoods`, {
       params: { townshipCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const villages = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const neighborhoods = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return villages;
-  } catch (error) {
-    console.error('Köy verileri alınırken hata oluştu:', error);
-    throw error;
-  }
-};
-
-// Köy koduna göre mahalleler
-export const getNeighborhoodsByVillage = async (villageCode) => {
-  try {
-    const response = await api.get(`${API_BASE_URL}/neighborhoods`, {
-      params: { villageCode },
-    });
-
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const neighborhoods = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
-      }));
-
-    return neighborhoods;
+      return neighborhoods;
+    }
+    return [];
   } catch (error) {
     console.error('Mahalle verileri alınırken hata oluştu:', error);
     throw error;
@@ -204,19 +163,14 @@ export const getStreetsByNeighborhood = async (neighborhoodCode) => {
       params: { neighborhoodCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const streets = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const streets = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return streets;
+      return streets;
+    }
+    return [];
   } catch (error) {
     console.error('Sokak/Cadde verileri alınırken hata oluştu:', error);
     throw error;
@@ -230,47 +184,37 @@ export const getBuildingsByStreet = async (streetCode) => {
       params: { streetCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const buildings = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const buildings = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return buildings;
+      return buildings;
+    }
+    return [];
   } catch (error) {
     console.error('Bina verileri alınırken hata oluştu:', error);
     throw error;
   }
 };
 
-// Bina koduna göre daireler/apartmanlar
-export const getApartmentsByBuilding = async (buildingCode) => {
+// Bina koduna göre BBK kodu
+export const getBbkByBuilding = async (buildingCode) => {
   try {
-    const response = await api.get(`${API_BASE_URL}/apartments`, {
+    const response = await api.get(`${API_BASE_URL}/bbk`, {
       params: { buildingCode },
     });
 
-    // HTML dizesini parse et
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(response.data, 'text/html');
-    const options = doc.querySelectorAll('option');
-
-    const apartments = Array.from(options)
-      .filter(option => option.value !== '') // "LÜTFEN SEÇİNİZ" seçeneğini hariç tut
-      .map(option => ({
-        code: option.value,
-        name: option.textContent.trim(),
+    if (response.data && response.data.Data) {
+      const bbkList = response.data.Data.map(item => ({
+        code: item.Code,
+        name: item.Name
       }));
-
-    return apartments;
+      return bbkList;
+    }
+    return [];
   } catch (error) {
-    console.error('Daire/Apartman verileri alınırken hata oluştu:', error);
+    console.error('BBK verileri alınırken hata oluştu:', error);
     throw error;
   }
 };
@@ -279,14 +223,13 @@ export const getApartmentsByBuilding = async (buildingCode) => {
 export const formatAddress = (addressData) => {
   const addressParts = [];
   
-  if (addressData.neighborhood.name) addressParts.push(`${addressData.neighborhood.name} Mah.`);
-  if (addressData.street.name) addressParts.push(`${addressData.street.name}`);
-  if (addressData.building.name) addressParts.push(`${addressData.building.name}`);
-  if (addressData.apartment.name) addressParts.push(`${addressData.apartment.name}`);
-  if (addressData.village.name && addressData.village.name !== 'MERKEZ') addressParts.push(`${addressData.village.name}`);
-  if (addressData.township.name && addressData.township.name !== 'MERKEZ') addressParts.push(`${addressData.township.name}`);
-  if (addressData.district.name) addressParts.push(`${addressData.district.name}`);
-  if (addressData.city.name) addressParts.push(addressData.city.name);
+  if (addressData.neighborhood && addressData.neighborhood.name) addressParts.push(`${addressData.neighborhood.name} Mah.`);
+  if (addressData.street && addressData.street.name) addressParts.push(`${addressData.street.name}`);
+  if (addressData.building && addressData.building.name) addressParts.push(`${addressData.building.name}`);
+  if (addressData.bbkInfo && addressData.bbkInfo.name) addressParts.push(`${addressData.bbkInfo.name}`);
+  if (addressData.township && addressData.township.name && addressData.township.name !== 'MERKEZ') addressParts.push(`${addressData.township.name}`);
+  if (addressData.district && addressData.district.name) addressParts.push(`${addressData.district.name}`);
+  if (addressData.city && addressData.city.name) addressParts.push(addressData.city.name);
   
   return addressParts.join(', ');
 };
