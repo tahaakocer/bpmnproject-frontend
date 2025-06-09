@@ -45,6 +45,11 @@ const Navbar = () => {
             <Link to="/karakteristikler" className="nav-link">Karakteristikler</Link>
           </li>
           <li className="nav-item">
+            <Link to="/kullanici-ara" className="nav-link">
+              Kullanıcı Ara
+            </Link>
+          </li>
+          <li className="nav-item">
             <button onClick={handleLogout} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
               Çıkış Yap
             </button>

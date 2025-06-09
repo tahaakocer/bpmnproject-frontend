@@ -31,6 +31,20 @@ export const getInfrastructureInfo = async (bbkCode) => {
           parseInt(infraData.Fiber.Distance) : null
       };
       
+      // DTO'ya uygun formatta da hazırla
+      result.toSacInfoDto = () => {
+        return {
+          maxSpeed: result.maxSpeed,
+          SVUID: result.svuId,
+          adslPortState: result.hasAdsl,
+          adslDistance: result.adsl,
+          vdslPortState: result.hasVdsl,
+          vdslDistance: result.vdsl,
+          fiberPortState: result.hasFiber,
+          fiberDistance: result.fiber
+        };
+      };
+      
       console.log('Altyapı bilgisi başarıyla getirildi:', result);
       return result;
     }

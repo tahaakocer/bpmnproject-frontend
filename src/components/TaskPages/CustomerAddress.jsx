@@ -190,7 +190,7 @@ const CustomerAddress = ({ onComplete, initialData, loading, orderData, onGoBack
     setOpenDropdown(openDropdown === dropdown ? '' : dropdown);
   };
 
-  // Altyapı bilgilerini getirme
+        // Altyapı bilgilerini getirme ve API'ye gönderme
   const fetchInfrastructureInfo = async (bbkCode) => {
     if (!bbkCode) return;
 
@@ -198,6 +198,21 @@ const CustomerAddress = ({ onComplete, initialData, loading, orderData, onGoBack
       setLocalLoading(true);
       const infraData = await getInfrastructureInfo(bbkCode);
       setInfrastructureInfo(infraData);
+      
+      // Altyapı bilgilerini API'ye gönder
+      if (infraData && orderData?.data?.orderRequestId) {
+        const orderRequestId = orderData.data.orderRequestId;
+        
+        // Yalnızca altyapı (SAC) bilgilerini içeren bir request oluştur
+        const sacInfoRequest = {
+          address: {
+            sacInfo: infraData.toSacInfoDto()
+          }
+        };
+        
+        console.log('Altyapı bilgisi gönderiliyor:', sacInfoRequest);
+        await updateOrderRequest(orderRequestId, sacInfoRequest);
+      }
     } catch (error) {
       console.error('Altyapı bilgisi alınırken hata:', error);
       setInfrastructureInfo(null);
@@ -335,6 +350,9 @@ const CustomerAddress = ({ onComplete, initialData, loading, orderData, onGoBack
           // BBK info'nun içinde daire numarası olabilir
           // DTO'da flatNo veya interiorDoorNo olarak tanımlanmış
           requestBody.address.flatNo = parseInt(updatedFormData.bbkInfo.name, 10) || null;
+          
+          // NOT: Altyapı bilgileri ayrı bir request ile gönderildiği için
+          // burada tekrar altyapı bilgisi eklemeye gerek yok
         }
 
         // Formatlanmış adresi de ekleyelim

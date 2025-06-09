@@ -23,7 +23,8 @@ import CharacteristicList from './components/CharacteristicList';
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-
+import UserSearch from './components/UserSearch.jsx';
+import UserDetail from './components/UserDetail.jsx';
 // Component to conditionally render Navbar
 const NavbarWrapper = () => {
   const location = useLocation();
@@ -435,6 +436,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <CharacteristicList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kullanici-ara"
+            element={
+              <ProtectedRoute>
+                <UserSearch />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/kullanici-detay"
+            element={
+              <ProtectedRoute>
+                <UserDetail />
               </ProtectedRoute>
             }
           />
